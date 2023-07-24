@@ -13,7 +13,7 @@ pub fn denoise(last_buffer: Vec<f32>, buffer: Vec<f32>, frac: f32) -> Vec<f32> {
         window = buffer.len();
     }
 
-    for i in 0..window {
+    for i in 0..(2*window) {
         let min = cmp::max(0, last_buffer.len() - 2 * window + i) as usize;
         let max = cmp::min(buffer.len(), i);
 
@@ -23,12 +23,12 @@ pub fn denoise(last_buffer: Vec<f32>, buffer: Vec<f32>, frac: f32) -> Vec<f32> {
         output[i] = (x+y)/((2*window + 1) as f32);
     }
 
-    for i in window..buffer.len() {
-        let min = i - window;
-        let max = cmp::min(buffer.len(), i + window);
+    for i in (2*window)..buffer.len() {
+        let min = i - 2 * window;
+        let max = cmp::min(buffer.len(), i);
 
         let x = buffer[min..max].iter().sum::<f32>();
-        output[i] = x/((2*window + 1) as f32);
+        output[i] = x/((2 * window + 1) as f32);
     }
 
     output
