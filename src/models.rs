@@ -3,5 +3,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone,Data,Lens,Deserialize,Serialize)]
 pub struct AppData {
-    pub master_volume: f32
+    pub denoise: bool,
+    pub volume: f64
 }
