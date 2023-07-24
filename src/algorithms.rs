@@ -3,24 +3,32 @@ use libm;
 
 pub fn denoise(last_buffer: Vec<f32>, buffer: Vec<f32>, frac: f32) -> Vec<f32> {
     let mut output = vec![0.0;buffer.len()];
-    let window = ((frac.powi(2) * buffer.len() as f32)/2.0) as usize;
+    let mut window = ((frac.powi(2) * buffer.len() as f32)/2.0) as usize;
 
     if last_buffer.len() == 0 {
         return output
     }
 
-    for i in 0..buffer.len() {
-        let min = cmp::max(0,i as i32 - window as i32) as usize;
+    if window > buffer.len() {
+        window = buffer.len();
+    }
 
-        if min > 0 {
-            let max = cmp::min(buffer.len()-1,i + window) as usize;
-            output[i] = buffer[min..max].iter().sum::<f32>()/((max - min + 1) as f32);
-        } else {
-            let max = cmp::min(buffer.len()-1,i + window) as usize;
-            let x = buffer[0..max].iter().sum::<f32>();
-            let y = last_buffer[(last_buffer.len() - window + i - 1)..last_buffer.len()-1].iter().sum::<f32>();
-            output[i] = (x+y)/((max + window - i + 1) as f32);
-        }
+    for i in 0..window {
+        let min = cmp::max(0, last_buffer.len() - 2 * window + i) as usize;
+        let max = cmp::min(buffer.len(), i);
+
+        let x = last_buffer[min..last_buffer.len() - 1].iter().sum::<f32>();
+        let y = buffer[0..max].iter().sum::<f32>();
+
+        output[i] = (x+y)/((2*window + 1) as f32);
+    }
+
+    for i in window..buffer.len() {
+        let min = i - window;
+        let max = cmp::min(buffer.len(), i + window);
+
+        let x = buffer[min..max].iter().sum::<f32>();
+        output[i] = x/((2*window + 1) as f32);
     }
 
     output
