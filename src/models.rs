@@ -1,8 +1,9 @@
 use druid::{Data, Lens};
-use serde::{Deserialize, Serialize};
 
-#[derive(Clone,Data,Lens,Deserialize,Serialize)]
+#[derive(Clone,Data,Lens)]
 pub struct AppData {
     pub denoise: bool,
-    pub volume: f64
+    pub frac: f64,
+    pub volume: f64,
+    pub drive: f64
 }
